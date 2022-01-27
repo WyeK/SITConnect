@@ -29,7 +29,7 @@ namespace SITConnect
             bool registration_valid = true;
             if (ValidateCaptcha())
             {
-                if (!Regex.IsMatch(tb_fName.Text.Trim(), "^[a-z ,.'-]+$", RegexOptions.IgnoreCase))
+                if (!Regex.IsMatch(tb_fName.Text.Trim(), "^[a-z ,.-]{2,50}$", RegexOptions.IgnoreCase))
                 {
                     registration_valid = false;
                     lbl_fName_check.Text = "Invalid First Name!";
@@ -39,7 +39,7 @@ namespace SITConnect
                 {
                     lbl_fName_check.Text = "";
                 }
-                if (!Regex.IsMatch(tb_lName.Text.Trim(), "^[a-z ,.'-]+$", RegexOptions.IgnoreCase))
+                if (!Regex.IsMatch(tb_lName.Text.Trim(), "^[a-z ,.-]{2,50}$", RegexOptions.IgnoreCase))
                 {
                     registration_valid = false;
                     lbl_lName_check.Text = "Invalid Last Name!";
