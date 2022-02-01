@@ -74,6 +74,10 @@ namespace SITConnect
                         {
                             lbl_dob.Text = reader["Birthdate"].ToString();
                         }
+                        if (reader["Photo"] != DBNull.Value)
+                        {
+                            img_photo.ImageUrl = reader["Photo"].ToString();
+                        }
                         lbl_email.Text = email;
                         lbl_creditCard.Text = decryptData(creditCard);
                     }

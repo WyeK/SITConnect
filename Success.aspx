@@ -20,6 +20,9 @@
         <div>
             <table class="auto-style1">
                 <tr>
+                    <asp:Image ID="img_photo" runat="server" AlternateText="Photo" ImageAlign="Left" />
+                </tr>
+                <tr>
                     <td class="auto-style2">First Name:</td>
                     <td class="auto-style2">
                         <asp:Label ID="lbl_fName" runat="server" Text="Label"></asp:Label>

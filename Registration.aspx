@@ -89,17 +89,13 @@
         function validateEmail() {
             var email = document.getElementById("<%=tb_email.ClientID %>").value;
             var email_check = document.getElementById("lbl_email_check");
-            if (email.length == 0) {
-                email_check.innerHTML = "Required!";
-                email_check.style.color = "Red";
-            }
-            else if (!email.search(/^\\w+[\\+\\.\\w-]*@([\\w-]+\\.)*\\w+[\\w-]*\\.([a-z]{2,4}|\\d+)$/i)) {
+            if (email.search(/^\w+[\+\.\w-]*@([\w-]+\.)*\w+[\w-]*\.([a-z]{2,4}|\d+)$/i)) {
                 email_check.innerHTML = "Email is invalid!";
                 email_check.style.color = "Red";
             }
             else {
                 email_check.innerHTML = "Excellent!";
-                email_check.style = "Green";
+                email_check.style.color = "Green";
             }
         }
         function validatePwd() {
@@ -231,7 +227,7 @@
             <tr>
                 <td class="auto-style2">Photo</td>
                 <td class="auto-style3">
-                    <asp:FileUpload ID="upload_photo" runat="server" />
+                    <asp:FileUpload ID="upload_photo" runat="server" accept=".png, .jpg" />
                 </td>
                 <td>
                     <asp:Label ID="lbl_photo_check" runat="server">Required!</asp:Label>

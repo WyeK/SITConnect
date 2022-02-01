@@ -19,6 +19,7 @@ namespace SITConnect
     {
         string SITConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["SITConnectDBConnection"].ConnectionString;
         static string salt;
+        string savePath;
         byte[] Key;
         byte[] IV;
         protected void Page_Load(object sender, EventArgs e)
@@ -88,8 +89,16 @@ namespace SITConnect
                     registration_valid = false;
                     lbl_cfmPwd_check.Text = "Passwords do not match!";
                 }
+                if (!upload_photo.HasFile)
+                {
+                    registration_valid = false;
+                    lbl_photo_check.Text = "Required!";
+                }
                 if (registration_valid)
                 {
+                    string saveDir = @"\Photos\";
+                    savePath = saveDir + Server.HtmlEncode(upload_photo.FileName);
+                    upload_photo.SaveAs(savePath);
                     RijndaelManaged cipher = new RijndaelManaged();
                     cipher.GenerateKey();
                     Key = cipher.Key;
@@ -169,9 +178,7 @@ namespace SITConnect
                             cmd.Parameters.AddWithValue("@Password", Convert.ToBase64String(hashAndSaltPwd(tb_password.Text.Trim())));
                             cmd.Parameters.AddWithValue("@Salt", salt);
                             cmd.Parameters.AddWithValue("@Birthdate", Convert.ToDateTime(tb_dob.Text.Trim()));
-                            SqlParameter imageParameter = new SqlParameter("@Photo", SqlDbType.Image);
-                            imageParameter.Value = DBNull.Value;
-                            cmd.Parameters.Add(imageParameter);
+                            cmd.Parameters.AddWithValue("@Photo", savePath);
                             cmd.Parameters.AddWithValue("@LockoutEnabled", false);
                             cmd.Parameters.AddWithValue("@LockoutEnd", DBNull.Value);
                             cmd.Parameters.AddWithValue("@AccessFailedCount", 0);
