@@ -11,11 +11,13 @@ using System.Data.SqlClient;
 using System.Net;
 using System.IO;
 using System.Web.Script.Serialization;
+using System.Text.RegularExpressions;
 
 namespace SITConnect
 {
     public partial class Login : System.Web.UI.Page
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         string SITConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["SITConnectDBConnection"].ConnectionString;
         byte[] Key;
         byte[] IV;
@@ -35,56 +37,81 @@ namespace SITConnect
                 SHA512Managed hashing = new SHA512Managed();
                 string dbHash = getDBHash(email);
                 string dbSalt = getDBSalt(email);
-                try
+                if (!validateInput())
                 {
-                    if (dbSalt != null && dbSalt.Length > 0 && dbHash != null && dbHash.Length > 0)
+                    lbl_validation.Text = "Invalid email or password!";
+                }
+                else
+                {
+                    try
                     {
-                        string pwdWithSalt = pwd + dbSalt;
-                        byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
-                        string userHash = Convert.ToBase64String(hashWithSalt);
-                        if (isLockoutDisabled(email))
+                        if (dbSalt != null && dbSalt.Length > 0 && dbHash != null && dbHash.Length > 0)
                         {
-                            if (userHash.Equals(dbHash))
+                            string pwdWithSalt = pwd + dbSalt;
+                            byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
+                            string userHash = Convert.ToBase64String(hashWithSalt);
+                            if (isLockoutDisabled(email))
                             {
-                                setLockoutCounter0(email);
-                                //Create session for user
-                                Session["Email"] = email;
-                                string guid = Guid.NewGuid().ToString();
-                                //Creating second session for the same user and assigning random GUID
-                                Session["AuthToken"] = guid;
-                                //Creating cookie and storing the same value of second session in the cookie
-                                Response.Cookies.Add(new HttpCookie("AuthToken", guid));
-                                if (isPastMaxAge(email))
+                                if (userHash.Equals(dbHash))
                                 {
-                                    Response.Redirect("ChangePassword.aspx", false);
+                                    setLockoutCounter0(email);
+                                    //Create session for user
+                                    Session["Email"] = email;
+                                    string guid = Guid.NewGuid().ToString();
+                                    //Creating second session for the same user and assigning random GUID
+                                    Session["AuthToken"] = guid;
+                                    //Creating cookie and storing the same value of second session in the cookie
+                                    Response.Cookies.Add(new HttpCookie("AuthToken", guid));
+                                    string logString = String.Format("User {0} - has logged in successfully", getUserId(email));
+                                    if (isPastMaxAge(email))
+                                    {
+                                        Logger.Info(logString);
+                                        Response.Redirect("ChangePassword.aspx", false);
+                                    }
+                                    else
+                                    {
+                                        Logger.Info(logString);
+                                        Response.Redirect("Success.aspx", false);
+                                    }
                                 }
                                 else
                                 {
-                                    Response.Redirect("Success.aspx", false);
+                                    loginFailCounter(email);
+                                    string logString = String.Format("User {0} - failed login attempt", getUserId(email));
+                                    Logger.Info(logString);
+                                    lbl_validation.Text = "Email or password is not valid. Please Try Again.";
                                 }
                             }
                             else
                             {
-                                loginFailCounter(email);
-                                lbl_validation.Text = "Email or password is not valid. Please Try Again.";
+                                lbl_validation.Text = "Account has been locked out";
                             }
                         }
                         else
                         {
-                            lbl_validation.Text = "Account has been locked out";
+                            lbl_validation.Text = "Email or password is not valid. Please Try Again.";
                         }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        lbl_validation.Text = "Email or password is not valid. Please Try Again.";
+                        throw new Exception(ex.ToString());
                     }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.ToString());
+
                 }
             }
 
+        }
+        protected bool validateInput()
+        {
+            if (!Regex.IsMatch(tb_email.Text.Trim(), "^\\w+[\\+\\.\\w-]*@([\\w-]+\\.)*\\w+[\\w-]*\\.([a-z]{2,4}|\\d+)$", RegexOptions.IgnoreCase))
+            {
+                return false;
+            }
+            if (!Regex.IsMatch(tb_password.Text.Trim(), "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]){12,}"))
+            {
+                return false;
+            }
+            return true;
         }
         protected bool isPastMaxAge(string email)
         {
@@ -306,6 +333,39 @@ namespace SITConnect
             finally { connection.Close(); }
             return s;
         }
+
+        protected string getUserId(string email)
+        {
+            string s = null;
+            SqlConnection connection = new SqlConnection(SITConnectionString);
+            string sql = "Select Id FROM ACCOUNT WHERE Email=@email";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@email", email);
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (reader["Id"] != null)
+                        {
+                            if (reader["Id"] != DBNull.Value)
+                            {
+                                s = reader["Id"].ToString();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return s;
+        }
+
         public class MyObject
         {
             public string success { get; set; }

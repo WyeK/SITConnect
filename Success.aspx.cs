@@ -12,12 +12,14 @@ namespace SITConnect
 {
     public partial class Success : System.Web.UI.Page
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         string SITConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["SITConnectDBConnection"].ConnectionString;
         byte[] Key;
         byte[] IV;
         byte[] creditCard = null;
         string email = null;
-        
+        string ID = null;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["Email"] != null && Session["AuthToken"] != null && Request.Cookies["AuthToken"] != null)
@@ -50,6 +52,10 @@ namespace SITConnect
                 {
                     while (reader.Read())
                     {
+                        if (reader["Id"] != DBNull.Value)
+                        {
+                            ID = reader["Id"].ToString();
+                        }
                         if (reader["FirstName"] != DBNull.Value)
                         {
                             lbl_fName.Text = reader["FirstName"].ToString();
@@ -125,7 +131,6 @@ namespace SITConnect
             Session.Abandon();
             Session.RemoveAll();
 
-            Response.Redirect("Login.aspx", false);
             if (Request.Cookies["ASP.NET_SessionId"] != null)
             {
                 Response.Cookies["ASP.NET_SessionId"].Value = string.Empty;
@@ -136,6 +141,10 @@ namespace SITConnect
                 Response.Cookies["AuthToken"].Value = string.Empty;
                 Response.Cookies["AuthToken"].Expires = DateTime.Now.AddMonths(-20);
             }
+
+            Logger.Info(String.Format("User {0} - has logged out successfully", ID));
+
+            Response.Redirect("Login.aspx", false);
         }
     }
 }
