@@ -54,31 +54,15 @@ namespace SITConnect
                             {
                                 if (userHash.Equals(dbHash))
                                 {
+                                    Session["OTPEmail"] = email;
                                     setLockoutCounter0(email);
-                                    //Create session for user
-                                    Session["Email"] = email;
-                                    string guid = Guid.NewGuid().ToString();
-                                    //Creating second session for the same user and assigning random GUID
-                                    Session["AuthToken"] = guid;
-                                    //Creating cookie and storing the same value of second session in the cookie
-                                    Response.Cookies.Add(new HttpCookie("AuthToken", guid));
-                                    string logString = String.Format("User {0} - has logged in successfully", getUserId(email));
-                                    if (isPastMaxAge(email))
-                                    {
-                                        Logger.Info(logString);
-                                        Response.Redirect("ChangePassword.aspx", false);
-                                    }
-                                    else
-                                    {
-                                        Logger.Info(logString);
-                                        Response.Redirect("Success.aspx", false);
-                                    }
+                                    Response.Redirect("OTP.aspx", false);
                                 }
                                 else
                                 {
                                     loginFailCounter(email);
                                     string logString = String.Format("User {0} - failed login attempt", getUserId(email));
-                                    Logger.Info(logString);
+                                    Logger.Warn(logString);
                                     lbl_validation.Text = "Email or password is not valid. Please Try Again.";
                                 }
                             }
@@ -112,39 +96,6 @@ namespace SITConnect
                 return false;
             }
             return true;
-        }
-        protected bool isPastMaxAge(string email)
-        {
-            SqlConnection connection = new SqlConnection(SITConnectionString);
-            string sql = "SELECT PasswordChangedAt FROM Account WHERE Email=@email";
-            SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@email", email);
-            try
-            {
-                connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        if (reader["PasswordChangedAt"] != null)
-                        {
-                            if (reader["PasswordChangedAt"] != DBNull.Value)
-                            {
-                                if (DateTime.Now.AddMinutes(-5) > (DateTime)reader["PasswordChangedAt"])
-                                {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.ToString());
-            }
-            finally { connection.Close(); }
-            return false;
         }
         protected void setLockoutCounter0(string email)
         {
