@@ -20,6 +20,7 @@ namespace SITConnect
         string SITConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["SITConnectDBConnection"].ConnectionString;
         static string salt;
         string savePath;
+        string saveDir = @"C:\Visual Studio Projects\SITConnect\Photos\";
         byte[] Key;
         byte[] IV;
         protected void Page_Load(object sender, EventArgs e)
@@ -94,9 +95,22 @@ namespace SITConnect
                     registration_valid = false;
                     lbl_photo_check.Text = "Required!";
                 }
+                else
+                {
+                    string extensions = System.IO.Path.GetExtension(upload_photo.FileName);
+                    if (!(extensions == ".jpg" || extensions == ".png"))
+                    {
+                        registration_valid = false;
+                        lbl_photo_check.Text = "Only allow jpg or png files!";
+                    }
+                    else if (File.Exists(saveDir + Server.HtmlEncode(upload_photo.FileName)))
+                    {
+                        registration_valid = false;
+                        lbl_photo_check.Text = "File already exists";
+                    }
+                }
                 if (registration_valid)
                 {
-                    string saveDir = @"\Photos\";
                     savePath = saveDir + Server.HtmlEncode(upload_photo.FileName);
                     upload_photo.SaveAs(savePath);
                     RijndaelManaged cipher = new RijndaelManaged();
@@ -164,7 +178,7 @@ namespace SITConnect
             {
                 using (SqlConnection con = new SqlConnection(SITConnectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@FirstName, @LastName, @CreditCardNum, @IV, @Key, @Email, @Password, @Salt, @Birthdate, @Photo, @LockoutEnabled, @LockoutEnd, @AccessFailedCount, @Password1, @Password2, @PasswordChangedAt)"))
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@FirstName, @LastName, @CreditCardNum, @IV, @Key, @Email, @Password, @Salt, @Birthdate, @Photo, @LockoutEnabled, @LockoutEnd, @AccessFailedCount, @Password1, @Password2, @PasswordChangedAt, @OTP, @OTPExpiry)"))
                     {
                         using (SqlDataAdapter sda = new SqlDataAdapter())
                         {
@@ -178,13 +192,15 @@ namespace SITConnect
                             cmd.Parameters.AddWithValue("@Password", Convert.ToBase64String(hashAndSaltPwd(tb_password.Text.Trim())));
                             cmd.Parameters.AddWithValue("@Salt", salt);
                             cmd.Parameters.AddWithValue("@Birthdate", Convert.ToDateTime(tb_dob.Text.Trim()));
-                            cmd.Parameters.AddWithValue("@Photo", savePath);
+                            cmd.Parameters.AddWithValue("@Photo", "\\Photos\\" + Server.HtmlEncode(upload_photo.FileName));
                             cmd.Parameters.AddWithValue("@LockoutEnabled", false);
                             cmd.Parameters.AddWithValue("@LockoutEnd", DBNull.Value);
                             cmd.Parameters.AddWithValue("@AccessFailedCount", 0);
                             cmd.Parameters.AddWithValue("@Password1", DBNull.Value);
                             cmd.Parameters.AddWithValue("@Password2", DBNull.Value);
                             cmd.Parameters.AddWithValue("@PasswordChangedAt", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@OTP", DBNull.Value);
+                            cmd.Parameters.AddWithValue("@OTPExpiry", DBNull.Value);
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();

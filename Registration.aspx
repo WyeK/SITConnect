@@ -154,6 +154,21 @@
                 dob_check.style.color = "Green";
             }
         }
+        function validatePhoto() {
+            console.log(photo.length);
+            var photo = document.getElementById("<%=upload_photo.ClientID %>").files;
+            var photo_check = document.getElementById("lbl_photo_check");
+
+            
+            if (photo.length == 0) {
+                photo_check.innerHTML = "Required!";
+                photo_check.style = "Red";
+            }
+            else {
+                photo_check.innerHTML = "Excellent";
+                photo_check.style = "Green";
+            }
+        }
     </script>
 </head>
 <body>
@@ -164,7 +179,7 @@
             <tr>
                 <td class="auto-style2">First Name</td>
                 <td class="auto-style3">
-                    <asp:TextBox ID="tb_fName" runat="server" onkeyup="javascript:validateFirstName()"></asp:TextBox>
+                    <asp:TextBox ID="tb_fName" runat="server" onkeyup="javascript:validateFirstName()" required="true"></asp:TextBox>
                 </td>
                 <td>
                     <asp:Label ID="lbl_fName_check" runat="server">Required!</asp:Label>
@@ -173,7 +188,7 @@
             <tr>
                 <td class="auto-style2">Last Name</td>
                 <td class="auto-style3">
-                    <asp:TextBox ID="tb_lName" runat="server" onkeyup="javascript:validateLastName()"></asp:TextBox>
+                    <asp:TextBox ID="tb_lName" runat="server" onkeyup="javascript:validateLastName()" required="true"></asp:TextBox>
                 </td>
                 <td>
                     <asp:Label ID="lbl_lName_check" runat="server">Required!</asp:Label>
@@ -182,7 +197,7 @@
             <tr>
                 <td class="auto-style2">Credit Card Number</td>
                 <td class="auto-style3">
-                    <asp:TextBox ID="tb_creditcard" runat="server" onkeyup="javascript:validateCreditCard()"></asp:TextBox>
+                    <asp:TextBox ID="tb_creditcard" runat="server" onkeyup="javascript:validateCreditCard()" required="true"></asp:TextBox>
                 </td>
                 <td>
                     <asp:Label ID="lbl_creditcard_check" runat="server">Required!</asp:Label>
@@ -191,7 +206,7 @@
             <tr>
                 <td class="auto-style2">Email Address</td>
                 <td class="auto-style3">
-                    <asp:TextBox ID="tb_email" runat="server" onkeyup="javascript:validateEmail()"></asp:TextBox>
+                    <asp:TextBox ID="tb_email" runat="server" onkeyup="javascript:validateEmail()" required="true"></asp:TextBox>
                 </td>
                 <td>
                     <asp:Label ID="lbl_email_check" runat="server">Required!</asp:Label>
@@ -200,7 +215,7 @@
             <tr>
                 <td class="auto-style2">Password</td>
                 <td class="auto-style3">
-                    <asp:TextBox ID="tb_password" runat="server" onkeyup="javascript:validatePwd()" TextMode="Password"></asp:TextBox>
+                    <asp:TextBox ID="tb_password" runat="server" onkeyup="javascript:validatePwd()" TextMode="Password" required="true"></asp:TextBox>
                 </td>
                 <td>
                     <asp:Label ID="lbl_pwd_check" runat="server">Required!</asp:Label>
@@ -209,7 +224,7 @@
             <tr>
                 <td class="auto-style2">Confirm Password</td>
                 <td class="auto-style3">
-                    <asp:TextBox ID="tb_cfmPassword" runat="server" onkeyup="javascript:validateCfmPwd()" TextMode="Password"></asp:TextBox>
+                    <asp:TextBox ID="tb_cfmPassword" runat="server" onkeyup="javascript:validateCfmPwd()" TextMode="Password" required="true"></asp:TextBox>
                 </td>
                 <td>
                     <asp:Label ID="lbl_cfmPwd_check" runat="server">Required!</asp:Label>
@@ -218,19 +233,19 @@
             <tr>
                 <td class="auto-style2">Date of Birth</td>
                 <td class="auto-style3">
-                    <asp:TextBox ID="tb_dob" runat="server" onchange="javascript:validateDOB()" TextMode="Date"></asp:TextBox>
+                    <asp:TextBox ID="tb_dob" runat="server" onchange="javascript:validateDOB()" TextMode="Date" required="true"></asp:TextBox>
                 </td>
                 <td>
-                    <asp:Label ID="lbl_date_check" runat="server">Required!</asp:Label>
+                    <asp:Label ID="lbl_date_check" runat="server" onchange="javascript:validatePhoto()">Required!</asp:Label>
                 </td>
             </tr>
             <tr>
                 <td class="auto-style2">Photo</td>
                 <td class="auto-style3">
-                    <asp:FileUpload ID="upload_photo" runat="server" accept=".png, .jpg" />
+                    <asp:FileUpload ID="upload_photo" runat="server" accept=".png, .jpg" required="true" />
                 </td>
                 <td>
-                    <asp:Label ID="lbl_photo_check" runat="server">Required!</asp:Label>
+                    <asp:Label ID="lbl_photo_check" runat="server"></asp:Label>
                 </td>
             </tr>
         </table>

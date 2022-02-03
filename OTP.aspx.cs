@@ -15,6 +15,7 @@ namespace SITConnect
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         string SITConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["SITConnectDBConnection"].ConnectionString;
+        string senderEmail = System.Configuration.ConfigurationManager.ConnectionStrings["myEmailName"].ConnectionString;
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["OTPEmail"] == null)
@@ -38,7 +39,7 @@ namespace SITConnect
             smtp.EnableSsl = true;
             smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
             smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new NetworkCredential("qwertya004@gmail.com", "WeeWyeKeong123");
+            smtp.Credentials = new NetworkCredential(senderEmail, "WeeWyeKeong123");
             smtp.Host = "smtp.gmail.com";
 
             mail.To.Add(new MailAddress(email));

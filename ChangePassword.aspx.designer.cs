@@ -42,6 +42,15 @@ namespace SITConnect
         protected global::System.Web.UI.WebControls.TextBox tb_existingPwd;
 
         /// <summary>
+        /// lbl_existingPwd control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_existingPwd;
+
+        /// <summary>
         /// tb_newPwd control.
         /// </summary>
         /// <remarks>
@@ -51,6 +60,15 @@ namespace SITConnect
         protected global::System.Web.UI.WebControls.TextBox tb_newPwd;
 
         /// <summary>
+        /// lbl_newPwd control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_newPwd;
+
+        /// <summary>
         /// tb_cfmNewPwd control.
         /// </summary>
         /// <remarks>
@@ -58,6 +76,15 @@ namespace SITConnect
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tb_cfmNewPwd;
+
+        /// <summary>
+        /// lbl_cfmNewPwd control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lbl_cfmNewPwd;
 
         /// <summary>
         /// btn_changePwd control.
