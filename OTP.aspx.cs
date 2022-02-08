@@ -59,12 +59,9 @@ namespace SITConnect
             if (verifyOTP(email, tb_otp.Text.ToString()))
             {
                 Session.Clear();
-                //Create session for user
                 Session["Email"] = email;
                 string guid = Guid.NewGuid().ToString();
-                //Creating second session for the same user and assigning random GUID
                 Session["AuthToken"] = guid;
-                //Creating cookie and storing the same value of second session in the cookie
                 Response.Cookies.Add(new HttpCookie("AuthToken", guid));
                 string logString = String.Format("User {0} - has logged in successfully", getUserId(email));
                 if (isPastMaxAge(email))

@@ -9,7 +9,7 @@
 <body>
     <h1>OTP</h1>
     <form id="form1" runat="server">
-        <div>
+        *Click on Send Code button<div>
             One Time Pin:
             <asp:TextBox ID="tb_otp" runat="server" Width="209px"></asp:TextBox>
             <asp:Button ID="btn_send" runat="server" Height="36px" OnClick="btn_send_Click" Text="Send Code" />

@@ -78,7 +78,8 @@ namespace SITConnect
                         }
                         if (reader["Birthdate"] != DBNull.Value)
                         {
-                            lbl_dob.Text = reader["Birthdate"].ToString();
+                            DateTime dob = (DateTime)reader["Birthdate"];
+                            lbl_dob.Text = dob.ToString("dd MMMM yyyy");
                         }
                         if (reader["Photo"] != DBNull.Value)
                         {

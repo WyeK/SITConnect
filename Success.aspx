@@ -52,10 +52,6 @@
                         <asp:Label ID="lbl_dob" runat="server" Text="Label"></asp:Label>
                     </td>
                 </tr>
-                <tr>
-                    <td>Photo:</td>
-                    <td>&nbsp;</td>
-                </tr>
             </table>
         </div>
         <asp:Button ID="btn_logout" runat="server" OnClick="btn_logout_Click" Text="Logout" />

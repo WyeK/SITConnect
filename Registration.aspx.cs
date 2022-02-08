@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Net;
 using System.IO;
 using System.Web.Script.Serialization;
+using System.Globalization;
 
 namespace SITConnect
 {
@@ -89,6 +90,20 @@ namespace SITConnect
                 {
                     registration_valid = false;
                     lbl_cfmPwd_check.Text = "Passwords do not match!";
+                }
+                DateTime dateValue;
+                if (!DateTime.TryParse(tb_dob.Text.Trim(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dateValue))
+                {
+                    registration_valid = false;
+                    lbl_date_check.Text = "Date is invalid!";
+                }
+                else
+                {
+                    if (dateValue > DateTime.Now)
+                    {
+                        registration_valid = false;
+                        lbl_date_check.Text = "Date cannot be after today!";
+                    }
                 }
                 if (!upload_photo.HasFile)
                 {
